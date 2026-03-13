@@ -1,0 +1,9 @@
+Keybinds.BerryTransofrmation.DisplayName: Berry Transformation
+PlayerDeathReason.Berry: Berry overdose
+
+Items: {
+	MythicalBerries: {
+		DisplayName: Mythical Berries
+		Tooltip: ""
+	}
+}

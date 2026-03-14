@@ -14,25 +14,52 @@ namespace Terraria_JJK.Content;
 public class MythicalBerries : TML.ModItem {
 	public override string Texture => $"{Mod.Name}/Assets/{nameof(MythicalBerries)}";
 
-	public override void SetDefaults() { }
+	public const int DamageBoostPercent = 30;
+
+	public override void SetDefaults() {
+		Item.Size = new FNA.Vector2(32f);
+		Item.value = Terraria.Item.buyPrice(gold: 1, silver: 100);
+		Item.accessory = true;
+	}
+
+	public override void UpdateEquip(Terraria.Player player) { 
+		var transformation = player.GetModPlayer<BerryTransformation>();
+		transformation.Available = true;
+		if (transformation.Activated) 
+			player.GetDamage(TML.DamageClass.Generic) += (float)DamageBoostPercent / 100;
+	}
+
+	public override void ModifyTooltips(Collections.List<TML.TooltipLine> tooltips) {
+		int lineIndex = tooltips.FindIndex(tooltip => tooltip.Text.StartsWith("Press {0}"));
+
+		if (lineIndex == -1) return;
+		tooltips[lineIndex].Text = Humanizer.StringExtensions.FormatWith(
+			tooltips[lineIndex].Text, 
+			System.Linq.Enumerable.FirstOrDefault(BerryTransformation.TransformKeybind.GetAssignedKeys(), "UNBOUND"),
+			DamageBoostPercent * 2
+		);
+	}
 }
 
-public class BerryTransofrmation : TML.ModPlayer {
+public class BerryTransformation : TML.ModPlayer {
 	public int TimeLeft;
 	public bool Activated;
+	public bool Available;
 
 	public const int Duration = 10 * 60;
 
 	public static TML.ModKeybind TransformKeybind;
 
 	public override void ProcessTriggers(Input.TriggersSet triggersSet) {
-		if (TransformKeybind.JustPressed) {
+		if (TransformKeybind.JustPressed && (Available && !Activated)) {
 			Activated = true;
 			TimeLeft = Duration;
 		}
 	}
 
 	public override void ResetEffects() {
+		Available = false;
+		
 		if (TimeLeft > 0 && Activated) TimeLeft--;
 		else if (Activated) Player.KillMe(
 			damageSource: new() {
@@ -46,7 +73,7 @@ public class BerryTransofrmation : TML.ModPlayer {
 
 	public override void UpdateDead() => (TimeLeft, Activated) = (0, false);
 
-	public override void Load() => TransformKeybind = TML.KeybindLoader.RegisterKeybind(Mod, "BerryTransofrmation", FNA.Input.Keys.None);
+	public override void Load() => TransformKeybind = TML.KeybindLoader.RegisterKeybind(Mod, "BerryTransformation", FNA.Input.Keys.None);
 
 	public override void Unload() => TransformKeybind = null;	
 }
@@ -108,7 +135,7 @@ public class BerryUI {
 		}
 
 		public override void Draw(FNA.Graphics.SpriteBatch spriteBatch) {
-			if (!Terraria.Main.LocalPlayer.GetModPlayer<BerryTransofrmation>().Activated)
+			if (!Terraria.Main.LocalPlayer.GetModPlayer<BerryTransformation>().Activated)
 				return;
 			
 			base.Draw(spriteBatch);
@@ -117,8 +144,8 @@ public class BerryUI {
 		protected override void DrawSelf(FNA.Graphics.SpriteBatch spriteBatch) {
 			base.DrawSelf(spriteBatch);
 
-			var player = Terraria.Main.LocalPlayer.GetModPlayer<BerryTransofrmation>();
-			var percentage = (float)player.TimeLeft / BerryTransofrmation.Duration;
+			var player = Terraria.Main.LocalPlayer.GetModPlayer<BerryTransformation>();
+			var percentage = (float)player.TimeLeft / BerryTransformation.Duration;
 
 			const int frameWidth = 4;
 			const int frameHeight = 4;
@@ -141,7 +168,7 @@ public class BerryUI {
 
 public class BerryLayers {
 	static FNA.Color GetColor(Terraria.Player player) => player.immune ? FNA.Color.White with { A = (byte)player.immuneAlpha } : FNA.Color.White;			
-	
+
 	public class Head : TML.PlayerDrawLayer {
 		public static TextureAsset Texture;
 

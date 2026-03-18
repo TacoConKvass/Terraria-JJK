@@ -176,7 +176,7 @@ public class BerryLayers {
 
 		public override void Unload() => Texture = null!;
 
-		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransofrmation>().Activated;
+		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransformation>().Activated;
 
 		public override Position GetDefaultPosition() => new BeforeParent(Data.PlayerDrawLayers.ArmOverItem);
 
@@ -208,7 +208,7 @@ public class BerryLayers {
 
 		public override void Unload() => Texture = null!;
 
-		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransofrmation>().Activated;
+		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransformation>().Activated;
 
 		public override Position GetDefaultPosition() => new AfterParent(Data.PlayerDrawLayers.ArmOverItem);
 
@@ -238,7 +238,7 @@ public class BerryLayers {
 	public class BackArm : TML.PlayerDrawLayer {
 		public static TextureAsset Texture => FrontArm.Texture;
 
-		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransofrmation>().Activated;
+		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransformation>().Activated;
 
 		public override Position GetDefaultPosition() => new AfterParent(Data.PlayerDrawLayers.Skin);
 

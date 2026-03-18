@@ -1,12 +1,9 @@
-Keybinds: {
-	BerryTransformation.DisplayName: Mythical Beast Berry Transformation
-}
-
+Keybinds.BerryTransformation.DisplayName: Mythical Beast Berry Transformation
 PlayerDeathReason.Berry: Berry overdose
 
 Items: {
 	MythicalBerries: {
-		DisplayName: Mythical Berries
-		Tooltip: "Press {0} to transform, giving you a combo attack and boosting your damage by {1}%."
+		DisplayName: Mythical Beast Berries
+		Tooltip: Press {0} to transform, giving you a combo attack and boosting your damage by {1}%.
 	}
 }

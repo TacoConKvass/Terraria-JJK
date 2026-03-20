@@ -11,7 +11,8 @@ using TextureRepo = Terraria.GameContent.TextureAssets;
 
 namespace Terraria_JJK.Content;
 
-public class MythicalBerries : TML.ModItem {
+public class MythicalBerries : TML.ModItem
+{
 	public override string Texture => $"{Mod.Name}/Assets/{nameof(MythicalBerries)}";
 
 	public const int DamageBoostPercent = 30;
@@ -22,10 +23,10 @@ public class MythicalBerries : TML.ModItem {
 		Item.accessory = true;
 	}
 
-	public override void UpdateEquip(Terraria.Player player) { 
+	public override void UpdateEquip(Terraria.Player player) {
 		var transformation = player.GetModPlayer<BerryTransformation>();
 		transformation.Available = true;
-		if (transformation.Activated) 
+		if (transformation.Activated)
 			player.GetDamage(TML.DamageClass.Generic) += (float)DamageBoostPercent / 100;
 	}
 
@@ -34,14 +35,15 @@ public class MythicalBerries : TML.ModItem {
 
 		if (lineIndex == -1) return;
 		tooltips[lineIndex].Text = Humanizer.StringExtensions.FormatWith(
-			tooltips[lineIndex].Text, 
+			tooltips[lineIndex].Text,
 			System.Linq.Enumerable.FirstOrDefault(BerryTransformation.TransformKeybind.GetAssignedKeys(), "UNBOUND"),
 			DamageBoostPercent * 2
 		);
 	}
 }
 
-public class BerryTransformation : TML.ModPlayer {
+public class BerryTransformation : TML.ModPlayer
+{
 	public int TimeLeft;
 	public bool Activated;
 	public bool Available;
@@ -59,7 +61,7 @@ public class BerryTransformation : TML.ModPlayer {
 
 	public override void ResetEffects() {
 		Available = false;
-		
+
 		if (TimeLeft > 0 && Activated) TimeLeft--;
 		else if (Activated) Player.KillMe(
 			damageSource: new() {
@@ -75,12 +77,14 @@ public class BerryTransformation : TML.ModPlayer {
 
 	public override void Load() => TransformKeybind = TML.KeybindLoader.RegisterKeybind(Mod, "BerryTransformation", FNA.Input.Keys.None);
 
-	public override void Unload() => TransformKeybind = null;	
+	public override void Unload() => TransformKeybind = null;
 }
 
-public class BerryUI {
+public class BerryUI
+{
 	[TML.Autoload(Side = TML.ModSide.Client)]
-	public class Setup : TML.ModSystem {
+	public class Setup : TML.ModSystem
+	{
 		UI.UserInterface ui;
 		BerryUI.State state;
 
@@ -112,7 +116,8 @@ public class BerryUI {
 		}
 	}
 
-	public class State : UI.UIState {
+	public class State : UI.UIState
+	{
 		UI.UIElement area;
 		UIElements.UIImage frameElement;
 		TextureAsset frame;
@@ -129,7 +134,7 @@ public class BerryUI {
 			frameElement = new UIElements.UIImage(frame.Value);
 			frameElement.Width.Set(frame.Value.Width, 0f);
 			frameElement.Height.Set(frame.Value.Height, 0f);
-			
+
 			area.Append(frameElement);
 			this.Append(area);
 		}
@@ -137,7 +142,7 @@ public class BerryUI {
 		public override void Draw(FNA.Graphics.SpriteBatch spriteBatch) {
 			if (!Terraria.Main.LocalPlayer.GetModPlayer<BerryTransformation>().Activated)
 				return;
-			
+
 			base.Draw(spriteBatch);
 		}
 
@@ -166,10 +171,12 @@ public class BerryUI {
 	}
 }
 
-public class BerryLayers {
-	static FNA.Color GetColor(Terraria.Player player) => player.immune ? FNA.Color.White with { A = (byte)player.immuneAlpha } : FNA.Color.White;			
+public class BerryLayers
+{
+	static FNA.Color GetColor(Terraria.Player player) => player.immune ? FNA.Color.White with { A = (byte)player.immuneAlpha } : FNA.Color.White;
 
-	public class Head : TML.PlayerDrawLayer {
+	public class Head : TML.PlayerDrawLayer
+	{
 		public static TextureAsset Texture;
 
 		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>($"{Mod.Name}/Assets/BerriesTransformation_Head");
@@ -189,10 +196,10 @@ public class BerryLayers {
 			// Taken from https://github.com/Mr-Plauge/MrPlagueRaces-1.4/ and tweaked a bit
 			// Let's assume it's correct :D
 			var headPosition = new FNA.Vector2(
-				(int)(drawInfo.Position.X - Terraria.Main.screenPosition.X - (player.bodyFrame.Width / 2) + (player.width / 2)), 
+				(int)(drawInfo.Position.X - Terraria.Main.screenPosition.X - (player.bodyFrame.Width / 2) + (player.width / 2)),
 				(int)(drawInfo.Position.Y - Terraria.Main.screenPosition.Y + player.height - player.bodyFrame.Height + 4f)
 			) + player.headPosition + new FNA.Vector2(14 + (player.direction == 1 ? 5 : 5), 28);
-			
+
 			int frameHeight = Texture.Value.Height / 20;
 			int headFrame = player.legFrame.Y / player.legFrame.Height;
 			var frame = new FNA.Rectangle { X = 0, Y = frameHeight * headFrame, Height = frameHeight, Width = Texture.Value.Width };
@@ -201,7 +208,8 @@ public class BerryLayers {
 		}
 	}
 
-	public class FrontArm : TML.PlayerDrawLayer {
+	public class FrontArm : TML.PlayerDrawLayer
+	{
 		public static TextureAsset Texture;
 
 		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>($"{Mod.Name}/Assets/BerriesTransformation_Body");
@@ -215,18 +223,18 @@ public class BerryLayers {
 		protected override void Draw(ref Data.PlayerDrawSet drawInfo) {
 			var player = drawInfo.drawPlayer;
 			if (player.invis) return;
-			
+
 			var color = BerryLayers.GetColor(player);
 
 			// Taken from https://github.com/Mr-Plauge/MrPlagueRaces-1.4/
 			// Let's assume it's correct :D
 			var frontArmPosition = new FNA.Vector2(
-				(int)(drawInfo.Position.X - Terraria.Main.screenPosition.X - (player.bodyFrame.Width / 2) + (player.width / 2)), 
+				(int)(drawInfo.Position.X - Terraria.Main.screenPosition.X - (player.bodyFrame.Width / 2) + (player.width / 2)),
 				(int)(drawInfo.Position.Y - Terraria.Main.screenPosition.Y + player.height - player.bodyFrame.Height + 4f)
-			) 
-			+ player.bodyPosition 
+			)
+			+ player.bodyPosition
 			+ new FNA.Vector2(
-				(int)(player.bodyFrame.Width / 2), 
+				(int)(player.bodyFrame.Width / 2),
 				(int)(player.bodyFrame.Height / 2)
 			);
 			// + new FNA.Vector2(2, (int)-2);
@@ -235,7 +243,8 @@ public class BerryLayers {
 		}
 	}
 
-	public class BackArm : TML.PlayerDrawLayer {
+	public class BackArm : TML.PlayerDrawLayer
+	{
 		public static TextureAsset Texture => FrontArm.Texture;
 
 		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransformation>().Activated;
@@ -245,23 +254,23 @@ public class BerryLayers {
 		protected override void Draw(ref Data.PlayerDrawSet drawInfo) {
 			var player = drawInfo.drawPlayer;
 			if (player.invis) return;
-			
+
 			drawInfo.colorHair = FNA.Color.Transparent;
 			var color = BerryLayers.GetColor(player);
 
 			// Taken from https://github.com/Mr-Plauge/MrPlagueRaces-1.4/
 			// Let's assume it's correct :D
 			var backArmPosition = new FNA.Vector2(
-				(int)(drawInfo.Position.X - Terraria.Main.screenPosition.X - (player.bodyFrame.Width / 2) + (player.width / 2)), 
+				(int)(drawInfo.Position.X - Terraria.Main.screenPosition.X - (player.bodyFrame.Width / 2) + (player.width / 2)),
 				(int)(drawInfo.Position.Y - Terraria.Main.screenPosition.Y + player.height - player.bodyFrame.Height + 4f)
-			) 
-			+ player.bodyPosition 
+			)
+			+ player.bodyPosition
 			+ new FNA.Vector2(
-				(int)(player.bodyFrame.Width / 2), 
+				(int)(player.bodyFrame.Width / 2),
 				(int)(player.bodyFrame.Height / 2)
 			);
 			var backArm = new Data.DrawData(Texture.Value, backArmPosition, drawInfo.compBackArmFrame, color, drawInfo.compositeBackArmRotation, drawInfo.bodyVect, 1f, drawInfo.playerEffect);
 			drawInfo.DrawDataCache.Add(backArm);
-		}		
+		}
 	}
 }

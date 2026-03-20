@@ -1,5 +1,3 @@
-using TML = Terraria.ModLoader;
-using FNA = Microsoft.Xna.Framework;
 using Locale = Terraria.Localization;
 using Input = Terraria.GameInput;
 using Data = Terraria.DataStructures;
@@ -50,7 +48,7 @@ public class BerryTransformation : TML.ModPlayer
 
 	public const int Duration = 10 * 60;
 
-	public static TML.ModKeybind TransformKeybind;
+	public static TML.ModKeybind TransformKeybind = null!;
 
 	public override void ProcessTriggers(Input.TriggersSet triggersSet) {
 		if (TransformKeybind.JustPressed && (Available && !Activated)) {
@@ -77,7 +75,7 @@ public class BerryTransformation : TML.ModPlayer
 
 	public override void Load() => TransformKeybind = TML.KeybindLoader.RegisterKeybind(Mod, "BerryTransformation", FNA.Input.Keys.None);
 
-	public override void Unload() => TransformKeybind = null;
+	public override void Unload() => TransformKeybind = null!;
 }
 
 public class BerryUI
@@ -85,8 +83,8 @@ public class BerryUI
 	[TML.Autoload(Side = TML.ModSide.Client)]
 	public class Setup : TML.ModSystem
 	{
-		UI.UserInterface ui;
-		BerryUI.State state;
+		UI.UserInterface? ui;
+		BerryUI.State? state;
 
 		public override void Load() {
 			ui = new UI.UserInterface();
@@ -118,9 +116,9 @@ public class BerryUI
 
 	public class State : UI.UIState
 	{
-		UI.UIElement area;
-		UIElements.UIImage frameElement;
-		TextureAsset frame;
+		UI.UIElement area = null!;
+		UIElements.UIImage frameElement = null!;
+		TextureAsset frame = null!;
 
 		public override void OnInitialize() {
 			frame = TML.ModContent.Request<FNA.Graphics.Texture2D>($"{nameof(Terraria_JJK)}/Assets/BerryTransformation_Frame", ReLogic.Content.AssetRequestMode.ImmediateLoad);
@@ -177,7 +175,7 @@ public class BerryLayers
 
 	public class Head : TML.PlayerDrawLayer
 	{
-		public static TextureAsset Texture;
+		public static TextureAsset? Texture;
 
 		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>($"{Mod.Name}/Assets/BerriesTransformation_Head");
 
@@ -200,7 +198,7 @@ public class BerryLayers
 				(int)(drawInfo.Position.Y - Terraria.Main.screenPosition.Y + player.height - player.bodyFrame.Height + 4f)
 			) + player.headPosition + new FNA.Vector2(14 + (player.direction == 1 ? 5 : 5), 28);
 
-			int frameHeight = Texture.Value.Height / 20;
+			int frameHeight = Texture!.Value.Height / 20;
 			int headFrame = player.legFrame.Y / player.legFrame.Height;
 			var frame = new FNA.Rectangle { X = 0, Y = frameHeight * headFrame, Height = frameHeight, Width = Texture.Value.Width };
 			Data.DrawData backArm = new Data.DrawData(Texture.Value, headPosition, frame, color, drawInfo.compositeBackArmRotation, drawInfo.bodyVect, 1f, drawInfo.playerEffect);
@@ -210,7 +208,7 @@ public class BerryLayers
 
 	public class FrontArm : TML.PlayerDrawLayer
 	{
-		public static TextureAsset Texture;
+		public static TextureAsset? Texture;
 
 		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>($"{Mod.Name}/Assets/BerriesTransformation_Body");
 
@@ -238,14 +236,14 @@ public class BerryLayers
 				(int)(player.bodyFrame.Height / 2)
 			);
 			// + new FNA.Vector2(2, (int)-2);
-			var frontArm = new Data.DrawData(Texture.Value, frontArmPosition, drawInfo.compFrontArmFrame, color, drawInfo.compositeFrontArmRotation, drawInfo.bodyVect, 1f, drawInfo.playerEffect);
+			var frontArm = new Data.DrawData(Texture!.Value, frontArmPosition, drawInfo.compFrontArmFrame, color, drawInfo.compositeFrontArmRotation, drawInfo.bodyVect, 1f, drawInfo.playerEffect);
 			drawInfo.DrawDataCache.Add(frontArm);
 		}
 	}
 
 	public class BackArm : TML.PlayerDrawLayer
 	{
-		public static TextureAsset Texture => FrontArm.Texture;
+		public static TextureAsset Texture => FrontArm.Texture!;
 
 		public override bool GetDefaultVisibility(Data.PlayerDrawSet drawInfo) => drawInfo.drawPlayer.GetModPlayer<BerryTransformation>().Activated;
 

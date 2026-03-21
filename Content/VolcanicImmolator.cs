@@ -1,5 +1,3 @@
-using ECS = Terraria_JJK.EC.ComponentExtensions;
-
 namespace Terraria_JJK.Content;
 
 public class VolcanicImmolator : TML.ModItem
@@ -12,10 +10,10 @@ public class VolcanicImmolator : TML.ModItem
 		Item.damage = 20;
 
 		Item.shoot = CalderaArrow.ID;
-		Item.shootSpeed = 10f;
+		Item.shootSpeed = 5f;
 		Item.useStyle = Terraria.ID.ItemUseStyleID.Shoot;
-		Item.useTime = 10;
-		Item.useAnimation = 10;
+		Item.useTime = 45;
+		Item.useAnimation = 45;
 
 		Item.useAmmo = Terraria.ID.AmmoID.Arrow;
 	}
@@ -41,11 +39,11 @@ public class CalderaArrow : TML.ModProjectile
 		Projectile.friendly = true;
 		Projectile.aiStyle = Terraria.ID.ProjAIStyleID.Arrow;
 
-		ECS.Set(Projectile, new Components.OnHit.BuffTarget {
+		EC.With(Projectile, new Components.OnHit.BuffTarget {
 			Type = Terraria.ID.BuffID.CursedInferno,
 			Time = Duration
 		});
-		ECS.Set(Projectile, new Components.OnHit.Shoot {
+		EC.Set(Projectile, new Components.OnHit.Shoot {
 			Queue = (Types: [Terraria.ID.ProjectileID.CursedArrow], Random: false),
 			Count = SpawnedFlames,
 			RelativePosition = static () => FNA.Vector2.Zero,

@@ -1,8 +1,6 @@
-using ECS = Terraria_JJK.EC.ComponentExtensions;
-
 namespace Terraria_JJK.Components.OnHit;
 
-[EC.Component]
+[EntityComponent.Component]
 public struct Shoot
 {
 	public (int[] Types, bool Random) Queue;
@@ -11,15 +9,11 @@ public struct Shoot
 	public System.Func<FNA.Vector2> RelativePosition;
 }
 
-internal class Shoot_Projectile : TML.GlobalProjectile
+internal class Shoot_Impl
 {
-	public override void OnHitPlayer(Terraria.Projectile projectile, Terraria.Player target, Terraria.Player.HurtInfo info) {
-		base.OnHitPlayer(projectile, target, info);
-	}
-
-	public override void OnHitNPC(Terraria.Projectile projectile, Terraria.NPC target, Terraria.NPC.HitInfo hit, int damageDone) {
-		var query = ECS.Get<Shoot>(projectile);
-		if (query is Shoot data) {
+	[DaybreakHooks.GlobalProjectileHooks.OnHitNPC]
+	internal static void Projectile_HitNPC(Terraria.Projectile projectile, Terraria.NPC target, Terraria.NPC.HitInfo hit, int damageDone) {
+		if (EC.TryGet<Shoot>(projectile, out var data)) {
 			var types = data.Queue.Types;
 			for (int i = 0; i < data.Count; i++)
 				Terraria.Projectile.NewProjectile(

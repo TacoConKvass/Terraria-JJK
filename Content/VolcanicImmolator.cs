@@ -9,17 +9,14 @@ public class VolcanicImmolator : TML.ModItem
 		Item.DamageType = TML.DamageClass.Ranged;
 		Item.damage = 20;
 
-		Item.shoot = CalderaArrow.ID;
-		Item.shootSpeed = 5f;
 		Item.useStyle = Terraria.ID.ItemUseStyleID.Shoot;
-		Item.useTime = 45;
-		Item.useAnimation = 45;
 
 		Item.useAmmo = Terraria.ID.AmmoID.Arrow;
-	}
-
-	public override void ModifyShootStats(Terraria.Player player, ref FNA.Vector2 position, ref FNA.Vector2 velocity, ref int type, ref int damage, ref float knockback) {
-		type = CalderaArrow.ID;
+		EC.With(Item, new Components.Shoots {
+			Type = CalderaArrow.ID,
+			Delay = 35,
+			Velocity = static (orig) => orig * 5f
+		});
 	}
 }
 
@@ -34,7 +31,7 @@ public class CalderaArrow : TML.ModProjectile
 	const float FlameSpeed = 12f;
 
 	public override void SetDefaults() {
-		Projectile.Size = new FNA.Vector2 { X = 16, Y = 16 };
+		Projectile.Size = new FNA.Vector2 { X = 12, Y = 12 };
 		Projectile.timeLeft = 15 * 60; // 15 seconds
 		Projectile.friendly = true;
 		Projectile.aiStyle = Terraria.ID.ProjAIStyleID.Arrow;

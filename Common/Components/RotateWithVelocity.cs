@@ -14,4 +14,12 @@ file class RotateWithVelocity_Impl
 
 		projectile.rotation = Terraria.Utils.ToRotation(projectile.velocity) + data.AdditionalRotation;
 	}
+
+
+	[DaybreakHooks.GlobalNPCHooks.AI]
+	internal static void RotateNPC() {
+		// if (!EC.TryGet<RotateWithVelocity>(npc, out var data)) return;
+
+		// npc.rotation = Terraria.Utils.ToRotation(npc.velocity) + data.AdditionalRotation;
+	}
 }

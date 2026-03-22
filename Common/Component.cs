@@ -91,6 +91,11 @@ public static class ComponentExtensions
 	public static void SetEnabled<T>(this Terraria.Player player, bool value) where T : struct => player.GetComponent<T>().Enabled = value;
 	public static void SetEnabled<T>(this Terraria.Projectile projectile, bool value) where T : struct => projectile.GetComponent<T>().Enabled = value;
 
+	public static bool Enabled<T>(this Terraria.NPC npc) where T : struct => npc.GetComponent<T>().Enabled;
+	public static bool Enabled<T>(this Terraria.Item item) where T : struct => item.GetComponent<T>().Enabled;
+	public static bool Enabled<T>(this Terraria.Player player) where T : struct => player.GetComponent<T>().Enabled;
+	public static bool Enabled<T>(this Terraria.Projectile projectile) where T : struct => projectile.GetComponent<T>().Enabled;
+
 	public static void Set<T>(this Terraria.NPC npc, T data) where T : struct => npc.GetComponent<T>().Data = data;
 	public static void Set<T>(this Terraria.Item item, T data) where T : struct => item.GetComponent<T>().Data = data;
 	public static void Set<T>(this Terraria.Player player, T data) where T : struct => player.GetComponent<T>().Data = data;

@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.Net.SDK">
-	<Import Project="..\tModLoader.targets" />
+	<Import Project="..\..\..\tModLoader.targets" />
 
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="..\..\ModReader\Daybreak\Daybreak.dll" />
+		<Reference Include="..\..\..\..\ModReader\Daybreak\Daybreak.dll" />
+		<ProjectReference Include="..\daybreak\src\Daybreak.CodeAnalysis\*.csproj" OutputItemType="Analyzer"/>
 	</ItemGroup>
 </Project>

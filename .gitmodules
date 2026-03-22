@@ -1,0 +1,3 @@
+[submodule "src/daybreak"]
+	path = src/daybreak
+	url = https://github.com/gold-meridian/daybreak-mod

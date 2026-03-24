@@ -1,6 +1,6 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EC.Component]
 public struct Fade
 {
 	public float Starting;

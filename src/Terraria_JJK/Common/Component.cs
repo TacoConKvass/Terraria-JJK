@@ -1,7 +1,7 @@
 using static System.Linq.Enumerable;
 using AttributeExt = System.Reflection.CustomAttributeExtensions;
 
-namespace Terraria_JJK.EntityComponent;
+namespace Terraria_JJK.EC;
 
 [System.AttributeUsage(System.AttributeTargets.Struct)]
 public class ComponentAttribute : System.Attribute

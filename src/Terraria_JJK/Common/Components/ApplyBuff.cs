@@ -1,6 +1,6 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EC.Component]
 public record struct ApplyBuff(int Type, int Duration)
 {
 	[DaybreakHooks.GlobalNPCHooks.AI]

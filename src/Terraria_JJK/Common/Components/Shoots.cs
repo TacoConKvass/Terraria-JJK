@@ -1,6 +1,6 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EC.Component]
 public struct Shoots : Core.ITriggerable<Terraria.Projectile>
 {
 	public Shoots() {

@@ -1,6 +1,6 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EC.Component]
 public record struct Sticky(float TicksOfDamagePerSecond)
 {
 	private sealed class SetStickyProjectileValues : TML.GlobalProjectile
@@ -27,7 +27,7 @@ public record struct Sticky(float TicksOfDamagePerSecond)
 	}
 }
 
-[EntityComponent.Component]
+[EC.Component]
 public record struct StuckTo(Terraria.Entity Target, System.Func<FNA.Vector2>? WithOffset)
 {
 	[DaybreakHooks.GlobalProjectileHooks.AI]

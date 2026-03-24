@@ -1,6 +1,6 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EC.Component]
 public struct RightClickable
 {
 	public System.Action<Terraria.Player> Effect;

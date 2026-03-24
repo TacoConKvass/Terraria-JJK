@@ -1,6 +1,6 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EC.Component]
 public record struct DampenVelocity(float Factor, float MinVelocity)
 {
 	[DaybreakHooks.GlobalProjectileHooks.AI]

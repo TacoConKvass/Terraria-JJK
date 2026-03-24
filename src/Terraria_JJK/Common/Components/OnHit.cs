@@ -7,7 +7,7 @@ public enum TargetType : byte
 	None,
 }
 
-[EntityComponent.Component(Wraps = [
+[EC.Component(Wraps = [
 	typeof(Fade), typeof(ApplyBuff), typeof(Shoots)
 ])]
 public record struct OnHit<T>(T Inner, TargetType Target) where T : struct

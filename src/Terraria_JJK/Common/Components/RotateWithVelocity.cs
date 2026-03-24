@@ -1,6 +1,6 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EC.Component]
 public struct RotateWithVelocity
 {
 	public float AdditionalRotation;

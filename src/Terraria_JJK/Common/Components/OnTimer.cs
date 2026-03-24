@@ -1,6 +1,8 @@
 namespace Terraria_JJK.Components;
 
-[EntityComponent.Component]
+[EntityComponent.Component(Wraps = [
+	typeof(Fade), typeof(Shoots), typeof(ApplyBuff), typeof(DampenVelocity)
+])]
 public struct OnTimer<T> where T : struct
 {
 	static OnTimer() {

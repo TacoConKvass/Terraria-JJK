@@ -1,5 +1,12 @@
 namespace Terraria_JJK.Components;
 
+public enum TargetType : byte
+{
+	Self,
+	Victim,
+	None,
+}
+
 [EntityComponent.Component(Wraps = [
 	typeof(Fade), typeof(ApplyBuff), typeof(Shoots)
 ])]

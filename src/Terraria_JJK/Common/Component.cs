@@ -1,18 +1,19 @@
-using Enumerable = System.Linq.Enumerable;
+using static System.Linq.Enumerable;
 using AttributeExt = System.Reflection.CustomAttributeExtensions;
 
 namespace Terraria_JJK.EntityComponent;
 
 [System.AttributeUsage(System.AttributeTargets.Struct)]
-public class ComponentAttribute : System.Attribute;
+public class ComponentAttribute : System.Attribute
+{
+	public System.Type[] Wraps = [];
+}
 
 public class ComponentLoader : TML.ModSystem
 {
 	public override void Load() {
-		var types = Enumerable.Where(Mod.Code.GetTypes(), type => AttributeExt.GetCustomAttribute<ComponentAttribute>(type) != null);
-		var components = Enumerable.ToArray(
-			Enumerable.Select(types, T => InstantiateComponents(T))
-		);
+		var types = Mod.Code.GetTypes().Where(type => AttributeExt.GetCustomAttribute<ComponentAttribute>(type) != null);
+		var components = types.SelectMany(T => T.IsGenericType ? InstantiateGeneric(T) : [InstantiateComponents(T)]).ToArray();
 
 		foreach (var entry in components) {
 			entry.Deconstruct(out var npc, out var item, out var player, out var projectile);
@@ -35,11 +36,22 @@ public class ComponentLoader : TML.ModSystem
 			InstantiateWith(typeof(ProjectileComponent<>), t)
 		);
 	}
+
+	static ComponentTuple[] InstantiateGeneric(System.Type T) {
+		if (AttributeExt.GetCustomAttribute<ComponentAttribute>(T) is not ComponentAttribute { Wraps: { Length: >= 1 } wrapped })
+			return [];
+
+		return wrapped.Select(t => {
+			var wrappedType = T.MakeGenericType(t);
+			System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(wrappedType.TypeHandle);
+			return InstantiateComponents(wrappedType);
+		}).ToArray();
+	}
 }
 
 public class NPCComponent<TData> : TML.GlobalNPC where TData : struct
 {
-	public override string Name => $"NPCComponent.{typeof(TData).Name}";
+	public override string Name => $"NPCComponent.{typeof(TData).FullName}";
 	public override bool InstancePerEntity { get; } = true;
 	internal TData Data;
 	internal bool Enabled = false;
@@ -48,7 +60,7 @@ public class NPCComponent<TData> : TML.GlobalNPC where TData : struct
 public class ItemComponent<TData> : TML.GlobalItem where TData : struct
 {
 
-	public override string Name => $"ItemComponent.{typeof(TData).Name}";
+	public override string Name => $"ItemComponent.{typeof(TData).FullName}";
 	public override bool InstancePerEntity { get; } = true;
 	internal TData Data;
 	internal bool Enabled = false;
@@ -56,14 +68,14 @@ public class ItemComponent<TData> : TML.GlobalItem where TData : struct
 
 public class PlayerComponent<TData> : TML.ModPlayer where TData : struct
 {
-	public override string Name => $"PlayerComponent.{typeof(TData).Name}";
+	public override string Name => $"PlayerComponent.{typeof(TData).FullName}";
 	internal TData Data;
 	internal bool Enabled = false;
 }
 
 public class ProjectileComponent<TData> : TML.GlobalProjectile where TData : struct
 {
-	public override string Name => $"ProjectileComponent.{typeof(TData).Name}";
+	public override string Name => $"ProjectileComponent.{typeof(TData).FullName}";
 	public override bool InstancePerEntity { get; } = true;
 	internal TData Data;
 	internal bool Enabled = false;
@@ -101,21 +113,25 @@ public static class ComponentExtensions
 	public static void Set<T>(this Terraria.Player player, T data) where T : struct => player.GetComponent<T>().Data = data;
 	public static void Set<T>(this Terraria.Projectile projectile, T data) where T : struct => projectile.GetComponent<T>().Data = data;
 
-	public static void With<T>(this Terraria.NPC npc, T data) where T : struct {
+	public static T With<T>(this Terraria.NPC npc, T data) where T : struct {
 		Enable<T>(npc);
 		Set(npc, data);
+		return data;
 	}
-	public static void With<T>(this Terraria.Item item, T data) where T : struct {
+	public static T With<T>(this Terraria.Item item, T data) where T : struct {
 		Enable<T>(item);
 		Set(item, data);
+		return data;
 	}
-	public static void With<T>(this Terraria.Player player, T data) where T : struct {
+	public static T With<T>(this Terraria.Player player, T data) where T : struct {
 		Enable<T>(player);
 		Set(player, data);
+		return data;
 	}
-	public static void With<T>(this Terraria.Projectile projectile, T data) where T : struct {
+	public static T With<T>(this Terraria.Projectile projectile, T data) where T : struct {
 		Enable<T>(projectile);
 		Set(projectile, data);
+		return data;
 	}
 
 	public static bool TryGet<T>(this Terraria.NPC npc, out T data) where T : struct {

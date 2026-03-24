@@ -1,7 +1,7 @@
 global using TML = Terraria.ModLoader;
 global using FNA = Microsoft.Xna.Framework;
-global using EC = Terraria_JJK.EntityComponent.ComponentExtensions;
 global using DaybreakHooks = Daybreak.Common.Features.Hooks;
+global using static Terraria_JJK.EntityComponent.ComponentExtensions;
 
 namespace Terraria_JJK;
 

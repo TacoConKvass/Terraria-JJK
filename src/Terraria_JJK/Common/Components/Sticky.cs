@@ -1,46 +1,38 @@
 namespace Terraria_JJK.Components;
 
 [EntityComponent.Component]
-public struct Sticky
-{
-	public float TicksOfDamagePerSecond;
-}
-
-[EntityComponent.Component]
-public struct StuckTo
-{
-	public Terraria.Entity Target;
-	public System.Func<FNA.Vector2> WithOffset;
-}
-
-file class Sticky_Impl
+public record struct Sticky(float TicksOfDamagePerSecond)
 {
 	private sealed class SetStickyProjectileValues : TML.GlobalProjectile
 	{
-		public override void SetDefaults(Terraria.Projectile entity) {
-			if (!EC.TryGet<Sticky>(entity, out var data)) return;
-			entity.penetrate = -1;
-			entity.usesLocalNPCImmunity = true;
-			entity.localNPCHitCooldown = (int)(60 / data.TicksOfDamagePerSecond);
+		public override void SetDefaults(Terraria.Projectile projectile) {
+			if (!projectile.TryGet<Sticky>(out var data)) return;
+			projectile.penetrate = -1;
+			projectile.usesLocalNPCImmunity = true;
+			projectile.localNPCHitCooldown = (int)(60 / data.TicksOfDamagePerSecond);
 		}
 	}
 
 	[DaybreakHooks.GlobalProjectileHooks.OnHitNPC]
 	internal static void StickToTargetNPC(Terraria.Projectile projectile, Terraria.NPC target, Terraria.NPC.HitInfo hit, int damageDone) {
-		if (!EC.Enabled<Sticky>(projectile)) return;
+		if (!projectile.Enabled<Sticky>()) return;
 
-		EC.Disable<Sticky>(projectile);
+		projectile.Disable<Sticky>();
 
 		var offset = projectile.Center - target.Center;
-		EC.With(projectile, new StuckTo {
+		projectile.With(new StuckTo {
 			Target = target,
 			WithOffset = () => offset
 		});
 	}
+}
 
+[EntityComponent.Component]
+public record struct StuckTo(Terraria.Entity Target, System.Func<FNA.Vector2>? WithOffset)
+{
 	[DaybreakHooks.GlobalProjectileHooks.AI]
 	internal static void MoveStuckProjectile(Terraria.Projectile projectile) {
-		if (!EC.TryGet<StuckTo>(projectile, out var data)) return;
+		if (!projectile.TryGet<StuckTo>(out var data)) return;
 		if (!data.Target.active) {
 			projectile.Kill();
 			return;

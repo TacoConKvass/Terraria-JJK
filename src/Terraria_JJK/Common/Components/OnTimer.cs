@@ -12,14 +12,14 @@ public struct OnTimer<T> where T : struct
 
 	internal static void TickProjectile(DaybreakHooks.GlobalProjectileHooks.AI.Original orig, TML.GlobalProjectile self, Terraria.Projectile projectile) {
 		orig(projectile);
-		if (!EC.TryGet<OnTimer<T>>(projectile, out var data)) return;
+		if (!projectile.TryGet<OnTimer<T>>(out var data)) return;
 
 		if (data.Timer > 0) {
-			EC.Set(projectile, data with { Timer = data.Timer - 1 });
+			projectile.Set(data with { Timer = data.Timer - 1 });
 			return;
 		}
 
-		EC.Disable<OnTimer<T>>(projectile);
-		EC.With(projectile, data.Inner);
+		projectile.Disable<OnTimer<T>>();
+		projectile.With(data.Inner);
 	}
 }

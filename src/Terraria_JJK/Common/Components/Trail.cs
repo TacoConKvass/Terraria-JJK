@@ -4,7 +4,6 @@ using Rendering = Daybreak.Common.Rendering;
 using static Daybreak.Common.Rendering.SpriteBatchSnapshotExtensions;
 using static Daybreak.Common.Rendering.SpriteBatchScopeExtensions;
 using static Terraria.Utils;
-using static System.MemoryExtensions;
 
 namespace Terraria_JJK.Components;
 
@@ -50,7 +49,7 @@ public record struct Trail(int MaxPositions, PositionQueue Positions, System.Fun
 		for (int i = 1; i < initial_count; i++) {
 			var current = positions[^i];
 			var next = positions[^(i + 1)];
-			var progress = i / (float)(initial_count - 1);
+			var progress = (i - 1) / (float)(initial_count - 1);
 			var width = System.MathF.Abs(data.Width(progress));
 			var color = data.Color(progress);
 			var normal = new FNA.Vector3(new FNA.Vector2(next.X - current.X, next.Y - current.Y).SafeNormalize(FNA.Vector2.Zero).RotatedBy(FNA.MathHelper.PiOver2), 0);

@@ -9,13 +9,19 @@ using static System.MemoryExtensions;
 namespace Terraria_JJK.Components;
 
 [EC.Component]
-public record struct Trail(int MaxPositions, PositionQueue Positions, float StartingWidth, FNA.Color Color)
+public record struct Trail(int MaxPositions, PositionQueue Positions, System.Func<float, float> Width, System.Func<float, FNA.Color> Color, FNA.Graphics.Texture2D? Texture)
 {
 	const FNA.Graphics.PrimitiveType Type = FNA.Graphics.PrimitiveType.TriangleStrip;
 
 	[DaybreakHooks.GlobalProjectileHooks.AI]
 	internal static void UpdateProjectile(Terraria.Projectile projectile) {
 		if (!projectile.TryGet(out Trail data)) return;
+
+		if (data.MaxPositions == 0 && data.Positions?.Count == 0) {
+			projectile.Disable<Trail>();
+			return;
+		}
+
 		if (data.Positions == null) {
 			projectile.Set(data with { Positions = [] });
 			return;
@@ -44,14 +50,15 @@ public record struct Trail(int MaxPositions, PositionQueue Positions, float Star
 		for (int i = 1; i < initial_count; i++) {
 			var current = positions[^i];
 			var next = positions[^(i + 1)];
-			var width = (data.StartingWidth / 2) * (1f - (i / (float)(initial_count - 1)));
+			var progress = i / (float)(initial_count - 1);
+			var width = System.MathF.Abs(data.Width(progress));
+			var color = data.Color(progress);
 			var normal = new FNA.Vector3(new FNA.Vector2(next.X - current.X, next.Y - current.Y).SafeNormalize(FNA.Vector2.Zero).RotatedBy(FNA.MathHelper.PiOver2), 0);
-			vertices[(i * 2) - 1] = new VertexData(current + (normal * width), data.Color, FNA.Vector2.Zero);
-			vertices[(i * 2) - 2] = new VertexData(current - (normal * width), data.Color, FNA.Vector2.UnitY);
+			vertices[(i * 2) - 2] = new VertexData(current + (normal * width), color, FNA.Vector2.Zero);
+			vertices[(i * 2) - 1] = new VertexData(current - (normal * width), color, FNA.Vector2.UnitY);
 		}
 
-		vertices[^1] = new VertexData(positions[0], data.Color, new FNA.Vector2 { X = 1, Y = 0.5f });
-		vertices.Reverse();
+		vertices[^1] = new VertexData(positions[0], data.Color(1f), new FNA.Vector2 { X = 1, Y = 0.5f });
 
 		var matrix = Core.Rendering.GetMatrix();
 		var snapshot = new Rendering.SpriteBatchSnapshot(Terraria.Main.spriteBatch);
@@ -63,6 +70,7 @@ public record struct Trail(int MaxPositions, PositionQueue Positions, float Star
 
 			var effect = Core.Rendering.DefaultEffect.Value;
 			effect.Parameters["WorldViewProjection"].SetValue(matrix);
+			effect.Parameters["inputTexture"].SetValue(data.Texture ?? Terraria.GameContent.TextureAssets.MagicPixel.Value);
 			effect.CurrentTechnique.Passes["Texture"].Apply();
 			Terraria.Main.graphics.GraphicsDevice.DrawUserPrimitives(
 				Type, vertices.ToArray(), 0,

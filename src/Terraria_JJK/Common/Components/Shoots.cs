@@ -30,7 +30,7 @@ public struct Shoots : Core.ITriggerable
 		}
 	}
 
-	void Core.ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target) {
+	void Core.ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
 		var (damage, knockBack, owner) = source switch {
 			Terraria.Projectile p => (p.damage, p.knockBack, p.owner),
 			Terraria.Item i => (i.damage, i.knockBack, -1),

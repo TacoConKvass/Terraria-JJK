@@ -24,7 +24,7 @@ public record struct OnHit<T>(T Inner, TargetType Target = TargetType.Victim) wh
 
 	static void TryTrigger(Terraria.Entity source, Terraria.Entity entity, OnHit<T> data) {
 		if (data.Inner is Core.ITriggerable i) {
-			i.Trigger(source, entity);
+			i.Trigger(source, entity, data.Target);
 			return;
 		}
 

@@ -5,16 +5,16 @@ texture2D inputTexture;
 
 struct PixelShaderInput
 {
-    float4 Position : SV_Position;
-    float4 Color : COLOR0;
-    float2 TextureCoord : TEXCOORD0;
+	float4 Position : SV_Position;
+	float4 Color : COLOR0;
+	float2 TextureCoord : TEXCOORD0;
 };
 
 struct VertexShaderInput
 {
-    float4 Position : POSITION;
-    float4 Color : COLOR0;
-    float2 TextureCoord : TEXCOORD0;
+	float4 Position : POSITION;
+	float4 Color : COLOR0;
+	float2 TextureCoord : TEXCOORD0;
 };
 
 sampler2D textureSampler = sampler_state {
@@ -27,12 +27,12 @@ sampler2D textureSampler = sampler_state {
 
 PixelShaderInput MainVertexShader(VertexShaderInput input)
 {
-    PixelShaderInput output = (PixelShaderInput) 0;
-    output.Color = input.Color;
+	PixelShaderInput output = (PixelShaderInput) 0;
+	output.Color = input.Color;
 	output.TextureCoord = input.TextureCoord;
-    output.Position = mul(input.Position, WorldViewProjection);
-    
-    return output;
+	output.Position = mul(input.Position, WorldViewProjection);
+
+	return output;
 }
 
 float4 TextureturePixelShader(PixelShaderInput input) : COLOR0
@@ -44,9 +44,9 @@ float4 TextureturePixelShader(PixelShaderInput input) : COLOR0
 
 technique Technique1
 {
-    pass Texture
-    {
-        VertexShader = compile vs_2_0 MainVertexShader();
-        PixelShader = compile ps_2_0 TextureturePixelShader();
-    }
-}
+	pass Texture
+	{
+		VertexShader = compile vs_2_0 MainVertexShader();
+		PixelShader = compile ps_2_0 TextureturePixelShader();
+	}
+}	

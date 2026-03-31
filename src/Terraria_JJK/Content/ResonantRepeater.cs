@@ -1,5 +1,6 @@
 using TextureAsset = ReLogic.Content.Asset<Microsoft.Xna.Framework.Graphics.Texture2D>;
 using static Terraria.Utils;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Terraria_JJK.Content;
 
@@ -81,6 +82,23 @@ public class ResonantNail : TML.ModProjectile
 			Inner = new() { MaxPositions = 0, },
 			Target = Components.TargetType.Self
 		});
+		Projectile.With(new Components.Listen<StrawDoll.Explode> {
+			Action = static (entity, data) => {
+				var Projectile = entity as Terraria.Projectile;
+				if (Projectile is null) return;
+
+				Terraria.Projectile.NewProjectile(
+					Projectile.GetSource_FromThis(),
+					Projectile.Center, FNA.Vector2.Zero,
+					Terraria.ID.ProjectileID.Flames,
+					Projectile.damage * 2,
+					Projectile.knockBack,
+					Projectile.owner
+				);
+
+				Projectile.Kill();
+			}
+		});
 	}
 }
 
@@ -90,18 +108,28 @@ public class StrawDoll : TML.ModProjectile
 
 	public static int ID => TML.ModContent.ProjectileType<StrawDoll>();
 
+	[EC.Component]
+	public struct Explode : Components.IListenable;
+
 	public override void SetDefaults() {
 		Projectile.Size = new FNA.Vector2 { X = 22, Y = 30 };
 		Projectile.timeLeft = 5 * 60;
 		Projectile.friendly = false;
 		Projectile.hostile = false;
+		Projectile.tileCollide = false;
+
 		Projectile.With(new Components.OnTimer<Components.SpawnDust> {
 			Inner = new Components.SpawnDust {
 				Type = Terraria.ID.DustID.HallowSpray,
 				Count = 15,
 				Velocity = static () => Terraria.Main.rand.NextVector2Unit() * 3f,
 				RelativePosition = static () => FNA.Vector2.Zero,
+				Callback = static () => { },
 			},
+			Timer = Projectile.timeLeft - 1
+		});
+		Projectile.With(new Components.OnTimer<Components.Broadcast<StrawDoll.Explode>> {
+			Inner = new() { Data = new() },
 			Timer = Projectile.timeLeft - 1
 		});
 	}

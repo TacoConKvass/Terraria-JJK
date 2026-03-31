@@ -60,8 +60,14 @@ public class ResonantNail : TML.ModProjectile
 		Projectile.Size = new FNA.Vector2 { X = 10, Y = 10 };
 		Projectile.timeLeft = 20 * 60;
 		Projectile.friendly = true;
+		Projectile.usesLocalNPCImmunity = true;
+		Projectile.localNPCHitCooldown = 60; // Damage every second;
+		Projectile.penetrate = -1;
 
-		Projectile.With(new Components.Sticky { TicksOfDamagePerSecond = 1 });
+		Projectile.With(new Components.OnHit<Components.StickTo> {
+			Inner = new(),
+			Target = Components.TargetType.Self
+		});
 		Projectile.With(new Components.RotateWithVelocity {
 			AdditionalRotation = FNA.MathHelper.PiOver2
 		});
@@ -101,7 +107,7 @@ public class StrawDoll : TML.ModProjectile
 	}
 
 	public override void OnSpawn(Terraria.DataStructures.IEntitySource source) {
-		Projectile.With(new Components.StuckTo {
+		Projectile.With(new Components.StickTo {
 			Target = Terraria.Main.player[Projectile.owner],
 			WithOffset = GetOffset,
 		});

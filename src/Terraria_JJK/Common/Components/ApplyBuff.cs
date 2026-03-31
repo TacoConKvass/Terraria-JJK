@@ -11,11 +11,16 @@ public record struct ApplyBuff(int Type, int Duration) : Core.ITriggerable
 				case Terraria.Projectile projectile:
 					if (projectile.friendly)
 						Terraria.Main.player[projectile.owner].AddBuff(Type, Duration);
-					if (projectile.hostile)
-						Terraria.Main.npc[projectile.owner].AddBuff(Type, Duration);
 					break;
 				default: break;
 			}
+			return;
+		}
+
+		switch (target) {
+			case Terraria.NPC npc: npc.AddBuff(Type, Duration); break;
+			case Terraria.Player player: player.AddBuff(Type, Duration); break;
+			default: break;
 		}
 	}
 }

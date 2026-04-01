@@ -63,7 +63,7 @@ public class BerryTransformation : TML.ModPlayer
 		if (TimeLeft > 0 && Activated) TimeLeft--;
 		else if (Activated) Player.KillMe(
 			damageSource: new() {
-				CustomReason = Locale.NetworkText.FromLiteral(Locale.Language.GetTextValue($"Mods.{Mod.Name}.PlayerDeathReason.Berry"))
+				CustomReason = Terraria_JJK.LocalizedNetworkTextWith("PlayerDeathReason.Berry", new { Player = Player.name })
 			},
 			dmg: 10_000,
 			hitDirection: 1,

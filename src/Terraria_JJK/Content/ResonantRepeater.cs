@@ -140,10 +140,11 @@ public class StrawDoll : TML.ModProjectile
 		});
 		Projectile.With(new Components.Listen<StrawDoll.Explode> {
 			Action = static (entity, data) => {
-				Terraria.Main.player[data.Owner].Hurt(new Terraria.Player.HurtInfo {
+				var owner = Terraria.Main.player[data.Owner];
+				owner.Hurt(new Terraria.Player.HurtInfo {
 					Damage = 100,
 					DamageSource = new() {
-						CustomReason = Terraria_JJK.LocalizedNetworkText("PlayerDeathReason.StrawDoll"),
+						CustomReason = Terraria_JJK.LocalizedNetworkTextWith("PlayerDeathReason.StrawDoll", new { Player = owner.name }),
 					}
 				});
 			}

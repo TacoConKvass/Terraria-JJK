@@ -1,5 +1,9 @@
 Keybinds.BerryTransformation.DisplayName: Mythical Beast Berry Transformation
-PlayerDeathReason.Berry: Berry overdose
+
+PlayerDeathReason: {
+	Berry: "{Player} died from berry overdose"
+	StrawDoll: "{Player} died after using the Straw Doll technique"
+}
 
 Items: {
 	MythicalBerries: {

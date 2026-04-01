@@ -1,12 +1,7 @@
 namespace Terraria_JJK.Components;
 
 [EC.Component]
-public struct RotateWithVelocity
-{
-	public float AdditionalRotation;
-}
-
-file class RotateWithVelocity_Impl
+public record struct RotateWithVelocity(float AdditionalRotation)
 {
 	[DaybreakHooks.GlobalProjectileHooks.AI]
 	internal static void RotateProjectile(Terraria.Projectile projectile) {

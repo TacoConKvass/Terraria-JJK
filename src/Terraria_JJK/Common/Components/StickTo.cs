@@ -1,7 +1,7 @@
 namespace Terraria_JJK.Components;
 
 [EC.Component]
-public record struct StickTo(Terraria.Entity Target, System.Func<FNA.Vector2>? WithOffset) : Core.ITriggerable
+public record struct StickTo(Terraria.Entity Target, System.Func<FNA.Vector2>? WithOffset) : ITriggerable
 {
 	[DaybreakHooks.GlobalProjectileHooks.AI]
 	internal static void MoveStuckProjectile(Terraria.Projectile projectile) {
@@ -15,7 +15,7 @@ public record struct StickTo(Terraria.Entity Target, System.Func<FNA.Vector2>? W
 
 	public void Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
 		var offset = source.Center - target.Center;
-		Core.ITriggerable.Default(source, target, targetType, new StickTo {
+		ITriggerable.Default(source, target, targetType, new StickTo {
 			Target = targetType == TargetType.Self ? target : source,
 			WithOffset = WithOffset ?? (() => offset),
 		});

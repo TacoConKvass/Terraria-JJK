@@ -8,7 +8,7 @@ using static Terraria.Utils;
 namespace Terraria_JJK.Components;
 
 [EC.Component]
-public record struct Trail(int MaxPositions, PositionQueue Positions, System.Func<float, float> Width, System.Func<float, FNA.Color> Color, FNA.Graphics.Texture2D? Texture) : Core.ITriggerable
+public record struct Trail(int MaxPositions, PositionQueue Positions, System.Func<float, float> Width, System.Func<float, FNA.Color> Color, FNA.Graphics.Texture2D? Texture) : ITriggerable
 {
 	const FNA.Graphics.PrimitiveType Type = FNA.Graphics.PrimitiveType.TriangleStrip;
 
@@ -78,12 +78,12 @@ public record struct Trail(int MaxPositions, PositionQueue Positions, System.Fun
 		}
 	}
 
-	void Core.ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
+	void ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
 		var data = this;
 		if (targetType == TargetType.Self && source.TryGet(out Trail selfData)) data = selfData;
 		else if (target.TryGet(out Trail targetData)) data = targetData;
 
-		Core.ITriggerable.Default(source, target, targetType, this with {
+		ITriggerable.Default(source, target, targetType, this with {
 			Positions = Positions ?? data.Positions,
 			Width = Width ?? data.Width,
 			Color = Color ?? data.Color,

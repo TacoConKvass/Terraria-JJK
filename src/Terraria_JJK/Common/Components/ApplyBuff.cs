@@ -1,9 +1,9 @@
 namespace Terraria_JJK.Components;
 
 [EC.Component]
-public record struct ApplyBuff(int Type, int Duration) : Core.ITriggerable
+public record struct ApplyBuff(int Type, int Duration) : ITriggerable
 {
-	void Core.ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
+	void ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
 		if (targetType == TargetType.Self) {
 			switch (source) {
 				case Terraria.NPC npc: npc.AddBuff(Type, Duration); break;

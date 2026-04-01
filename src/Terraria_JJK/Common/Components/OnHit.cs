@@ -6,8 +6,22 @@ public enum TargetType : byte
 	Victim,
 }
 
-[EC.Component(Wraps = typeof(Core.ITriggerable))]
-public record struct OnHit<T>(T Inner, TargetType Target = TargetType.Victim) where T : struct, Core.ITriggerable
+public interface ITriggerable
+{
+	public void Trigger(Terraria.Entity source, Terraria.Entity target, Components.TargetType targetType);
+
+	public static void Default<T>(Terraria.Entity source, Terraria.Entity target, Components.TargetType targetType, T data) where T : struct {
+		if (targetType == Components.TargetType.Self) {
+			source.With(data);
+			return;
+		}
+
+		target.With(data);
+	}
+}
+
+[EC.Component(Wraps = typeof(ITriggerable))]
+public record struct OnHit<T>(T Inner, TargetType Target = TargetType.Victim) where T : struct, ITriggerable
 {
 	static OnHit() {
 		DaybreakHooks.GlobalProjectileHooks.OnHitNPC.Event += OnProjectileHitNPC;

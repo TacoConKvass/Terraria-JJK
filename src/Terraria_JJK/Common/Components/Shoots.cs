@@ -1,7 +1,7 @@
 namespace Terraria_JJK.Components;
 
 [EC.Component]
-public struct Shoots : Core.ITriggerable
+public struct Shoots : ITriggerable
 {
 	public Shoots() {
 		Type = Terraria.ID.ProjectileID.PurificationPowder;
@@ -30,7 +30,7 @@ public struct Shoots : Core.ITriggerable
 		}
 	}
 
-	void Core.ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
+	void ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
 		var (damage, knockBack, owner) = source switch {
 			Terraria.Projectile p => (p.damage, p.knockBack, p.owner),
 			Terraria.Item i => (i.damage, i.knockBack, -1),
@@ -85,9 +85,4 @@ public struct Shoots : Core.ITriggerable
 		data.Callback?.Invoke();
 		return false;
 	}
-}
-
-file class Shoots_Impl
-{
-
 }

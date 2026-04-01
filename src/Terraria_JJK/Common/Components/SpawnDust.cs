@@ -13,16 +13,16 @@ public record struct SpawnDust(
 	int Alpha,
 	float? Scale,
 	System.Action? Callback
-) : Core.ITriggerable, ITimeable
+) : ITriggerable, ITimeable
 {
 	[DaybreakHooks.GlobalProjectileHooks.AI]
 	internal static void ProjectileUpdate(Terraria.Projectile projectile) {
 		if (!projectile.TryGet(out SpawnDust data)) return;
 
-		(data as Core.ITriggerable).Trigger(projectile, null!, TargetType.Self);
+		(data as ITriggerable).Trigger(projectile, null!, TargetType.Self);
 	}
 
-	void Core.ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
+	void ITriggerable.Trigger(Terraria.Entity source, Terraria.Entity target, TargetType targetType) {
 		if (targetType == TargetType.Self) {
 			ExecuteSpawns(source.Center, source.Hitbox);
 			if (source is Terraria.NPC npc) npc.Disable<SpawnDust>();

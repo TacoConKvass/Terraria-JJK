@@ -130,6 +130,13 @@ public class StrawDoll : TML.ModProjectile
 	}
 
 	public override void OnSpawn(Terraria.DataStructures.IEntitySource source) {
+		Projectile.With(new Components.Quad {
+			Rotations = GetRotations,
+			Corners = Components.Quad.CreateRectCorners(Projectile.Size / 2),
+			WithBackside = true,
+			Replace = true,
+			Texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value
+		});
 		Projectile.With(new Components.StickTo {
 			Target = Terraria.Main.player[Projectile.owner],
 			WithOffset = GetOffset,
@@ -155,4 +162,6 @@ public class StrawDoll : TML.ModProjectile
 		Projectile.ai[0] = System.Math.Clamp(Projectile.ai[0] + 1, 0, 60);
 		return -Projectile.ai[0] * FNA.Vector2.UnitY;
 	}
+
+	public FNA.Vector3 GetRotations() => new FNA.Vector3(0, Projectile.ai[0] / 60 * FNA.MathHelper.TwoPi, 0);
 }

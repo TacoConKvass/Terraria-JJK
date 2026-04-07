@@ -6,7 +6,7 @@ public class Helpers
 {
 	public static ReLogic.Content.Asset<FNA.Graphics.Effect> DefaultEffect = null!;
 
-	[DaybreakHooks.ModSystemHooks.OnModLoad]
+	[DaybreakHooks.ModSystemHooks.OnModLoad(Side = TML.ModSide.Client)]
 	static void SetEffect() {
 		DefaultEffect = TML.ModContent.Request<FNA.Graphics.Effect>(Terraria_JJK.AssetPath + "Effects/BasicEffect");
 	}

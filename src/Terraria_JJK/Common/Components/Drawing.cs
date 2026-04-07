@@ -1,5 +1,3 @@
-using static Terraria.Utils;
-
 namespace Terraria_JJK.Components;
 
 [EC.Component]
@@ -17,18 +15,18 @@ file class DrawingAdjustments
 		var frameUniform = projectile.frame / (float)Terraria.Main.projFrames[projectile.type];
 
 		DoDraw(
-			texture, projectile.Center + (positionAdjustment.Translation.RotatedBy(projectile.rotation + FNA.MathHelper.PiOver2)),
-			frameUniform, lightColor, projectile.rotation, positionAdjustment.Origin, projectile.scale
+			texture, projectile.Center + positionAdjustment.Translation,
+			frameUniform, Terraria.Main.projFrames[projectile.type], lightColor, projectile.rotation, positionAdjustment.Origin, projectile.scale
 		);
 
 		return false;
 	}
 
-	public static void DoDraw(FNA.Graphics.Texture2D texture, FNA.Vector2 position, float frameUniform, FNA.Color color, float rotation, FNA.Vector2 origin, float scale) {
+	public static void DoDraw(FNA.Graphics.Texture2D texture, FNA.Vector2 position, float frameUniform, float frameCount, FNA.Color color, float rotation, FNA.Vector2 origin, float scale) {
 		Terraria.Main.EntitySpriteDraw(
 			texture,
 			position - Terraria.Main.screenPosition,
-			texture.Bounds with { Y = (int)(texture.Bounds.Y * frameUniform) },
+			texture.Bounds with { Y = (int)(texture.Bounds.Height * frameUniform), Height = (int)(texture.Height / frameCount) },
 			color, rotation, origin, scale, FNA.Graphics.SpriteEffects.None
 		);
 	}

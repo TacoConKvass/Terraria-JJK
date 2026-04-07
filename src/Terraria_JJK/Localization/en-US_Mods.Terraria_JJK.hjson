@@ -34,3 +34,10 @@ Projectiles: {
 	VolcanicFlame.DisplayName: Volcanic Flame
 	SeraphSpear.DisplayName: Seraph Spear
 }
+
+Buffs: {
+	Buff: {
+		DisplayName: Weak
+		Description: Damage taken increased by 20%
+	}
+}

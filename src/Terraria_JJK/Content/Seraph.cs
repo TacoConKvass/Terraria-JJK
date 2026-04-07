@@ -30,12 +30,42 @@ public class SeraphSpear : TML.ModProjectile
 	public static int ID => TML.ModContent.ProjectileType<SeraphSpear>();
 
 	public override void SetDefaults() {
-		Projectile.Size = new FNA.Vector2 { X = 60, Y = 60 };
+		Projectile.Size = new FNA.Vector2 { X = 20, Y = 20 };
 		Projectile.timeLeft = 9 * 60;
 		Projectile.friendly = true;
 
 		Projectile.With(new Components.OnHit<Components.ApplyBuff> {
-			Inner = new() { Type = Terraria.ID.BuffID.Weak, Duration = 9 * 60 },
+			Inner = new() { Type = Buff.ID, Duration = 10 * 60 },
+			Target = Components.TargetType.Victim,
 		});
+		Projectile.With(new Components.RotateWithVelocity {
+			AdditionalRotation = FNA.MathHelper.PiOver4
+		});
+		Projectile.With(new Components.DrawPositionAdjustment {
+			Origin = new FNA.Vector2 { X = 55, Y = 5 },
+		});
+	}
+
+	public class Buff : TML.ModBuff
+	{
+		public static int ID => TML.ModContent.BuffType<Buff>();
+
+		public override string Texture => $"Terraria/Images/Buff_{Terraria.ID.BuffID.Weak}";
+
+		public override void SetStaticDefaults() {
+			Terraria.Main.debuff[Type] = true;
+			Terraria.Main.buffNoTimeDisplay[Type] = true;
+		}
+
+		public override void Update(Terraria.NPC npc, ref int buffIndex) {
+			Terraria.Main.NewText(npc.HasBuff<Buff>());
+		}
+
+		[DaybreakHooks.GlobalNPCHooks.ModifyIncomingHit]
+		static void NPCIncreaseDamageTaken(Terraria.NPC npc, ref Terraria.NPC.HitModifiers modifiers) {
+			if (!npc.HasBuff<Buff>()) return;
+
+			modifiers.FinalDamage *= 1.2f;
+		}
 	}
 }

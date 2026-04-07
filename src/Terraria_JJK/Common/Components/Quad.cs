@@ -1,8 +1,8 @@
-using VertexData = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
-using SpriteBatchSnapshot = Daybreak.Common.Rendering.SpriteBatchSnapshot;
-using static Terraria.Utils;
 using static Daybreak.Common.Rendering.SpriteBatchScopeExtensions;
 using static Daybreak.Common.Rendering.SpriteBatchSnapshotExtensions;
+using static Terraria.Utils;
+using SpriteBatchSnapshot = Daybreak.Common.Rendering.SpriteBatchSnapshot;
+using VertexData = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
 
 namespace Terraria_JJK.Components;
 

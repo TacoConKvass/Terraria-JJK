@@ -1,11 +1,11 @@
-using Locale = Terraria.Localization;
-using Input = Terraria.GameInput;
+using Collections = System.Collections.Generic;
 using Data = Terraria.DataStructures;
+using Input = Terraria.GameInput;
+using Locale = Terraria.Localization;
 using TextureAsset = ReLogic.Content.Asset<Microsoft.Xna.Framework.Graphics.Texture2D>;
+using TextureRepo = Terraria.GameContent.TextureAssets;
 using UI = Terraria.UI;
 using UIElements = Terraria.GameContent.UI.Elements;
-using Collections = System.Collections.Generic;
-using TextureRepo = Terraria.GameContent.TextureAssets;
 
 namespace Terraria_JJK.Content;
 

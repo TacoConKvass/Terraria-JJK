@@ -1,9 +1,9 @@
-using PositionQueue = System.Collections.Generic.Queue<Microsoft.Xna.Framework.Vector3>;
-using VertexData = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
-using Rendering = Daybreak.Common.Rendering;
-using static Daybreak.Common.Rendering.SpriteBatchSnapshotExtensions;
 using static Daybreak.Common.Rendering.SpriteBatchScopeExtensions;
+using static Daybreak.Common.Rendering.SpriteBatchSnapshotExtensions;
 using static Terraria.Utils;
+using PositionQueue = System.Collections.Generic.Queue<Microsoft.Xna.Framework.Vector3>;
+using Rendering = Daybreak.Common.Rendering;
+using VertexData = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
 
 namespace Terraria_JJK.Components;
 

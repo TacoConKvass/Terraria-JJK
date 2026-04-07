@@ -1,5 +1,5 @@
-using TextureAsset = ReLogic.Content.Asset<Microsoft.Xna.Framework.Graphics.Texture2D>;
 using static Terraria.Utils;
+using TextureAsset = ReLogic.Content.Asset<Microsoft.Xna.Framework.Graphics.Texture2D>;
 
 namespace Terraria_JJK.Content;
 

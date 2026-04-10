@@ -59,10 +59,14 @@ public class BerryTransformation : TML.ModPlayer
 
 	int currentAttackIndex;
 	int currentAttackDelay;
-	(int Type, int Speed)[] attackQueue = [
-		(BerryEnergyBolt.ID, 15),
-		(BerryEnergyBolt.ID, 15),
-		(BerrySoundBlast.ID, 10),
+	(int Type, float Speed, int Cooldown)[] attackQueue = [
+		(BerryEnergyBolt.ID, 15, 3),
+		(BerryEnergyBolt.ID, 15, 3),
+		(BerryEnergyBolt.ID, 15, AttackDelay),
+		(BerryEnergyBolt.ID, 15, 3),
+		(BerryEnergyBolt.ID, 15, 3),
+		(BerryEnergyBolt.ID, 15, AttackDelay),
+		(BerrySoundBlast.ID, 10, AttackDelay),
 	];
 	const int AttackDelay = Core.Const.Second;
 
@@ -88,7 +92,7 @@ public class BerryTransformation : TML.ModPlayer
 		);
 
 		currentAttackIndex = (currentAttackIndex + 1) % attackQueue.Length;
-		currentAttackDelay = AttackDelay;
+		currentAttackDelay = attack.Cooldown;
 	}
 
 	public override void ResetEffects() {
@@ -126,6 +130,7 @@ public class BerrySoundBlast : TML.ModProjectile
 		Projectile.Size = new FNA.Vector2 { X = 70, Y = 70 };
 		Projectile.timeLeft = 10 * Core.Const.Second;
 		Projectile.friendly = true;
+		Projectile.penetrate = 8;
 
 		Projectile.With(new Components.Animate { FrameDelay = 10 });
 		Projectile.With(new Components.DrawPositionAdjustment { Origin = new FNA.Vector2 { X = 50, Y = 40 } });
@@ -149,7 +154,7 @@ public class BerryEnergyBolt : TML.ModProjectile
 		Projectile.friendly = true;
 
 		Projectile.With(new Components.Animate { FrameDelay = 5 });
-		Projectile.With(new Components.DrawPositionAdjustment { Origin = new FNA.Vector2 { X = 27, Y = 3.5f } });
+		Projectile.With(new Components.DrawPositionAdjustment { Origin = new FNA.Vector2 { X = 27, Y = 5.5f } });
 		Projectile.With(new Components.RotateWithVelocity { });
 	}
 }

@@ -11,7 +11,7 @@ namespace Terraria_JJK.Content;
 
 public class MythicalBerries : TML.ModItem
 {
-	public override string Texture => $"{Mod.Name}/Assets/{nameof(MythicalBerries)}";
+	public override string Texture => Terraria_JJK.AssetPath($"Items/{nameof(MythicalBerries)}");
 
 	public const int DamageBoostPercent = 30;
 
@@ -35,20 +35,20 @@ public class MythicalBerries : TML.ModItem
 		tooltips[lineIndex].Text = Humanizer.StringExtensions.FormatWith(
 			tooltips[lineIndex].Text,
 			System.Linq.Enumerable.FirstOrDefault(BerryTransformation.TransformKeybind.GetAssignedKeys(), "UNBOUND"),
-			DamageBoostPercent * 2
+			DamageBoostPercent
 		);
 	}
 }
 
 public class BerryTransformation : TML.ModPlayer
 {
+	public const int Duration = 30 * Core.Const.Second;
+
+	public static TML.ModKeybind TransformKeybind = null!;
+
 	public int TimeLeft;
 	public bool Activated;
 	public bool Available;
-
-	public const int Duration = 10 * 60;
-
-	public static TML.ModKeybind TransformKeybind = null!;
 
 	public override void ProcessTriggers(Input.TriggersSet triggersSet) {
 		if (TransformKeybind.JustPressed && (Available && !Activated)) {
@@ -57,19 +57,16 @@ public class BerryTransformation : TML.ModPlayer
 		}
 	}
 
-	public override bool CanUseItem(Terraria.Item item) => !Activated;
-
 	int currentAttackIndex;
 	int currentAttackDelay;
-	int[] attackType = [
-		Terraria.ID.ProjectileID.BeeArrow,
-		Terraria.ID.ProjectileID.DemonScythe
+	(int Type, int Speed)[] attackQueue = [
+		(BerryEnergyBolt.ID, 15),
+		(BerryEnergyBolt.ID, 15),
+		(BerrySoundBlast.ID, 10),
 	];
-	float[] attackSpeed = [
-		15f,
-		10f,
-	];
-	const int AttackDelay = 60;
+	const int AttackDelay = Core.Const.Second;
+
+	public override bool CanUseItem(Terraria.Item item) => !Activated;
 
 	public override void PostUpdate() {
 		// Execute this code strictly client side, and only if the transformation was activated
@@ -81,15 +78,16 @@ public class BerryTransformation : TML.ModPlayer
 		}
 
 		var item = Player.HeldItem;
+		var attack = attackQueue[currentAttackIndex];
 
 		Terraria.Projectile.NewProjectile(
 			Player.GetSource_Misc("Berry Transformation attack"),
-			position: Player.Center, velocity: Player.Center.DirectionTo(Terraria.Main.MouseWorld) * attackSpeed[currentAttackIndex],
-			Type: attackType[currentAttackIndex], Damage: (int)Player.GetDamage(item.DamageType).ApplyTo(item.damage),
+			position: Player.Center, velocity: Player.Center.DirectionTo(Terraria.Main.MouseWorld) * attack.Speed,
+			Type: attack.Type, Damage: (int)Player.GetDamage(item.DamageType).ApplyTo(item.damage),
 			KnockBack: Player.GetKnockback(item.DamageType).ApplyTo(item.knockBack), Owner: Player.whoAmI
 		);
 
-		currentAttackIndex = (currentAttackIndex + 1) % attackType.Length;
+		currentAttackIndex = (currentAttackIndex + 1) % attackQueue.Length;
 		currentAttackDelay = AttackDelay;
 	}
 
@@ -107,11 +105,53 @@ public class BerryTransformation : TML.ModPlayer
 		);
 	}
 
-	public override void UpdateDead() => (TimeLeft, Activated, currentAttackDelay, currentAttackIndex) = (0, false, 0, 9);
+	public override void UpdateDead() => (TimeLeft, Activated, currentAttackDelay, currentAttackIndex) = (0, false, 0, 0);
 
 	public override void Load() => TransformKeybind = TML.KeybindLoader.RegisterKeybind(Mod, "BerryTransformation", FNA.Input.Keys.None);
 
 	public override void Unload() => TransformKeybind = null!;
+}
+
+public class BerrySoundBlast : TML.ModProjectile
+{
+	public static int ID => TML.ModContent.ProjectileType<BerrySoundBlast>();
+
+	public override string Texture => Terraria_JJK.AssetPath($"Projectiles/{nameof(BerrySoundBlast)}");
+
+	public override void SetStaticDefaults() {
+		Terraria.Main.projFrames[Type] = 4;
+	}
+
+	public override void SetDefaults() {
+		Projectile.Size = new FNA.Vector2 { X = 70, Y = 70 };
+		Projectile.timeLeft = 10 * Core.Const.Second;
+		Projectile.friendly = true;
+
+		Projectile.With(new Components.Animate { FrameDelay = 10 });
+		Projectile.With(new Components.DrawPositionAdjustment { Origin = new FNA.Vector2 { X = 50, Y = 40 } });
+		Projectile.With(new Components.RotateWithVelocity { });
+	}
+}
+
+public class BerryEnergyBolt : TML.ModProjectile
+{
+	public static int ID => TML.ModContent.ProjectileType<BerryEnergyBolt>();
+
+	public override string Texture => Terraria_JJK.AssetPath($"Projectiles/{nameof(BerryEnergyBolt)}");
+
+	public override void SetStaticDefaults() {
+		Terraria.Main.projFrames[Type] = 5;
+	}
+
+	public override void SetDefaults() {
+		Projectile.Size = new FNA.Vector2 { X = 18, Y = 18 };
+		Projectile.timeLeft = 10 * Core.Const.Second;
+		Projectile.friendly = true;
+
+		Projectile.With(new Components.Animate { FrameDelay = 5 });
+		Projectile.With(new Components.DrawPositionAdjustment { Origin = new FNA.Vector2 { X = 27, Y = 3.5f } });
+		Projectile.With(new Components.RotateWithVelocity { });
+	}
 }
 
 public class BerryUI
@@ -157,7 +197,7 @@ public class BerryUI
 		TextureAsset frame = null!;
 
 		public override void OnInitialize() {
-			frame = TML.ModContent.Request<FNA.Graphics.Texture2D>(Terraria_JJK.AssetPath("BerryTransformation_Frame"), ReLogic.Content.AssetRequestMode.ImmediateLoad);
+			frame = TML.ModContent.Request<FNA.Graphics.Texture2D>(Terraria_JJK.AssetPath("UI/BerryTransformation_Frame"), ReLogic.Content.AssetRequestMode.ImmediateLoad);
 
 			area = new UI.UIElement();
 			area.Width.Set(frame.Value.Width, 0f);
@@ -213,7 +253,7 @@ public class BerryLayers
 	{
 		public static TextureAsset? Texture;
 
-		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>(Terraria_JJK.AssetPath($"BerriesTransformation_Head"));
+		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>(Terraria_JJK.AssetPath($"Misc/BerriesTransformation_Head"));
 
 		public override void Unload() => Texture = null!;
 
@@ -246,7 +286,7 @@ public class BerryLayers
 	{
 		public static TextureAsset? Texture;
 
-		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>(Terraria_JJK.AssetPath("BerriesTransformation_Body"));
+		public override void Load() => Texture = TML.ModContent.Request<FNA.Graphics.Texture2D>(Terraria_JJK.AssetPath("Misc/BerriesTransformation_Body"));
 
 		public override void Unload() => Texture = null!;
 

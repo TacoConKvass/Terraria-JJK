@@ -33,6 +33,8 @@ Projectiles: {
 	StrawDoll.DisplayName: Straw Doll
 	VolcanicFlame.DisplayName: Volcanic Flame
 	SeraphSpear.DisplayName: Seraph Spear
+	BerryEnergyBolt.DisplayName: Mythical Berry Energy Bolt
+	BerrySoundBlast.DisplayName: Mythical Berry Sound Blast
 }
 
 Buffs: {

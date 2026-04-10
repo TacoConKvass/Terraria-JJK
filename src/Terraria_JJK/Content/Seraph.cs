@@ -31,11 +31,11 @@ public class SeraphSpear : TML.ModProjectile
 
 	public override void SetDefaults() {
 		Projectile.Size = new FNA.Vector2 { X = 20, Y = 20 };
-		Projectile.timeLeft = 9 * 60;
+		Projectile.timeLeft = 9 * Core.Const.Second;
 		Projectile.friendly = true;
 
 		Projectile.With(new Components.OnHit<Components.ApplyBuff> {
-			Inner = new() { Type = Buff.ID, Duration = 10 * 60 },
+			Inner = new() { Type = Buff.ID, Duration = 10 * Core.Const.Second },
 			Target = Components.TargetType.Victim,
 		});
 		Projectile.With(new Components.RotateWithVelocity {

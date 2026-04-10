@@ -58,10 +58,10 @@ public class ResonantNail : TML.ModProjectile
 
 	public override void SetDefaults() {
 		Projectile.Size = new FNA.Vector2 { X = 10, Y = 10 };
-		Projectile.timeLeft = 20 * 60;
+		Projectile.timeLeft = 20 * Core.Const.Second;
 		Projectile.friendly = true;
 		Projectile.usesLocalNPCImmunity = true;
-		Projectile.localNPCHitCooldown = 60; // Damage every second;
+		Projectile.localNPCHitCooldown = Core.Const.Second; // Damage every second;
 		Projectile.penetrate = -1;
 
 		Projectile.With(new Components.OnHit<Components.StickTo> {
@@ -112,7 +112,7 @@ public class StrawDoll : TML.ModProjectile
 
 	public override void SetDefaults() {
 		Projectile.Size = new FNA.Vector2 { X = 22, Y = 30 };
-		Projectile.timeLeft = 5 * 60;
+		Projectile.timeLeft = 5 * Core.Const.Second;
 		Projectile.friendly = false;
 		Projectile.hostile = false;
 		Projectile.tileCollide = false;

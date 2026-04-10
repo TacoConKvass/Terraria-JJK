@@ -29,13 +29,13 @@ public class CalderaArrow : TML.ModProjectile
 
 	public override string Texture => Terraria_JJK.AssetPath($"Projectiles/{nameof(CalderaArrow)}");
 
-	const int Duration = 10 * 60; // 10 seconds
+	const int Duration = 10 * Core.Const.Second;
 	const int SpawnedFlames = 5;
 	const float FlameSpeed = 4f;
 
 	public override void SetDefaults() {
 		Projectile.Size = new FNA.Vector2 { X = 12, Y = 12 };
-		Projectile.timeLeft = 15 * 60; // 15 seconds
+		Projectile.timeLeft = 15 * Core.Const.Second;
 		Projectile.friendly = true;
 		Projectile.aiStyle = Terraria.ID.ProjAIStyleID.Arrow;
 
@@ -75,7 +75,7 @@ public class VolcanicFlame : TML.ModProjectile
 
 	public override void SetDefaults() {
 		Projectile.Size = new FNA.Vector2 { X = 10, Y = 10 };
-		Projectile.timeLeft = 3 * 60;
+		Projectile.timeLeft = 3 * Core.Const.Second;
 		Projectile.friendly = true;
 		Projectile.aiStyle = Terraria.ID.ProjAIStyleID.Arrow;
 
@@ -96,15 +96,15 @@ public class VolcanicFlame : TML.ModProjectile
 			Inner = new() {
 				Starting = 1f,
 				Final = 0.1f,
-				Duration = 3 * 60,
+				Duration = 3 * Core.Const.Second,
 			},
-			Timer = 60,
+			Timer = Core.Const.Second,
 		});
 		Projectile.With(new Components.RotateWithVelocity {
 			AdditionalRotation = -FNA.MathHelper.PiOver2,
 		});
 		Projectile.With(new Components.WhileTimer<Components.CantDamage> {
-			Timer = 60,
+			Timer = Core.Const.Second,
 			Inner = default
 		});
 		Projectile.With(new Components.Animate { FrameDelay = 10 });

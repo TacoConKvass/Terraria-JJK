@@ -43,6 +43,7 @@ public class MythicalBerries : TML.ModItem
 public class BerryTransformation : TML.ModPlayer
 {
 	public const int Duration = 30 * Core.Const.Second;
+	public const int TransformationDustCount = 30;
 
 	public static TML.ModKeybind TransformKeybind = null!;
 
@@ -54,6 +55,19 @@ public class BerryTransformation : TML.ModPlayer
 		if (TransformKeybind.JustPressed && (Available && !Activated)) {
 			Activated = true;
 			TimeLeft = Duration;
+			if (Terraria.Main.netMode != Terraria.ID.NetmodeID.Server) {
+				for (int i = 0; i < TransformationDustCount; i++) {
+					var dust = Terraria.Dust.NewDustDirect(
+						Player.TopLeft, Player.Hitbox.Width, Player.Hitbox.Height,
+						Terraria.Main.rand.NextFromList<int>([
+							Terraria.ID.DustID.PinkCrystalShard,
+							Terraria.ID.DustID.PurpleCrystalShard,
+							Terraria.ID.DustID.CorruptSpray,
+						]), 0, 0
+					);
+					dust.velocity = dust.position.DirectionTo(Player.Center) * 4f;
+				}
+			}
 		}
 	}
 

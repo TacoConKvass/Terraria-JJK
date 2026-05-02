@@ -7,6 +7,13 @@ using VertexData = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
 
 namespace Terraria_JJK.Components;
 
+public enum TextureMode
+{
+	ApplyLightColor,
+	ApplyLightBrightness,
+	UseActualColor,
+}
+
 [EC.Component]
 public record struct Trail(
 	int MaxPositions,
@@ -15,7 +22,8 @@ public record struct Trail(
 	System.Func<float, float> Width,
 	System.Func<float, FNA.Color> Color,
 	FNA.Graphics.Texture2D? Texture,
-	int? FadeDelay
+	int FadeSpeed,
+	TextureMode TextureMode
 ) : ITriggerable
 {
 	const FNA.Graphics.PrimitiveType Type = FNA.Graphics.PrimitiveType.TriangleStrip;
@@ -37,7 +45,6 @@ public record struct Trail(
 			return;
 		}
 
-
 		var add_position = projectile.Enabled<Trail.AddPosition>();
 		if (data.Delay.HasValue) {
 			projectile.Disable<AddPosition>();
@@ -45,8 +52,8 @@ public record struct Trail(
 
 		if (data.Delay == null || add_position) {
 			data.Positions.Enqueue(new FNA.Vector3(projectile.Center, 0));
-			for (int i = 0; i < 2; i++) // Try removing excessive positions
-				if (data.Positions.Count > data.MaxPositions) data.Positions.Dequeue();
+			for (int i = 0; i < 2 && (data.Positions.Count > data.MaxPositions); i++) // Try removing excessive positions
+				data.Positions.Dequeue();
 		}
 
 		if (data.Delay.HasValue && !projectile.Enabled<OnTimer<Trail.AddPosition>>())
@@ -54,7 +61,6 @@ public record struct Trail(
 				Timer = data.Delay.Value,
 				Inner = default,
 			});
-
 	}
 
 	[DaybreakHooks.GlobalProjectileHooks.PreDraw]
@@ -77,7 +83,18 @@ public record struct Trail(
 			var next = positions[^(i + 1)];
 			var progress = (i - 1) / (float)(initial_count - 1);
 			var width = System.MathF.Abs(data.Width(progress));
-			var color = data.Color(progress);
+			FNA.Color color;
+
+			if (data.TextureMode.HasFlag(TextureMode.UseActualColor))
+				color = FNA.Color.White;
+			else color = data.Color(progress);
+
+			// Lighting interaction
+			if (data.TextureMode.HasFlag(TextureMode.ApplyLightColor))
+				color = color.MultiplyRGB(Terraria.Lighting.GetColor((int)current.X / 16, (int)current.Y / 16));
+			if (data.TextureMode.HasFlag(TextureMode.ApplyLightBrightness))
+				color *= Terraria.Lighting.GetColor((int)current.X / 16, (int)current.Y / 16).A;
+
 			var normal = new FNA.Vector3(new FNA.Vector2(next.X - current.X, next.Y - current.Y).SafeNormalize(FNA.Vector2.Zero).RotatedBy(FNA.MathHelper.PiOver2), 0);
 			vertices[(i * 2) - 2] = new VertexData(current + (normal * width), color, FNA.Vector2.Zero);
 			vertices[(i * 2) - 1] = new VertexData(current - (normal * width), color, FNA.Vector2.UnitY);
@@ -129,10 +146,11 @@ public record struct Trail(
 		for (int i = 0; i < dead.Count; i++) {
 			var trail = dead[i];
 			RenderTrail(trail);
-			timers[i]--;
-			if (timers[i] <= 0) {
-				trail.Positions.Dequeue();
-				timers[i] = trail.FadeDelay!.Value;
+			if (timers[i] < 0) timers[i]++;
+			if (timers[i] >= 0) {
+				for (int j = 0; j < timers[i] && (trail.Positions.Count > 0); j++)
+					trail.Positions.Dequeue();
+				timers[i] = trail.FadeSpeed;
 			}
 			if (trail.Positions.Count == 0) {
 				timers.RemoveAt(i);
@@ -144,10 +162,10 @@ public record struct Trail(
 
 	[DaybreakHooks.GlobalProjectileHooks.PreKill]
 	static void AddToDead(Terraria.Projectile projectile, int timeLeft) {
-		if (projectile.TryGet(out Trail data) && data.FadeDelay.HasValue) {
+		if (projectile.TryGet(out Trail data) && data.FadeSpeed != 0) {
 			data.Positions.Enqueue(new FNA.Vector3(projectile.Center, 0));
 			dead.Add(data);
-			timers.Add(data.FadeDelay.Value);
+			timers.Add(data.FadeSpeed);
 		}
 	}
 }

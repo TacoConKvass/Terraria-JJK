@@ -7,14 +7,14 @@ public struct Shoots : ITriggerable
 		Type = Terraria.ID.ProjectileID.PurificationPowder;
 		Count = 1;
 		Velocity = static (orig) => orig;
-		RelativePosition = static () => FNA.Vector2.Zero;
+		RelativePosition = static (direction) => FNA.Vector2.Zero;
 	}
 
 	public int Type;
 	public (int[] Types, bool Random)? Queue;
 	public int Count;
 	public System.Func<FNA.Vector2, FNA.Vector2> Velocity;
-	public System.Func<FNA.Vector2> RelativePosition;
+	public System.Func<FNA.Vector2, FNA.Vector2> RelativePosition;
 	public int Delay;
 	public System.Action? Callback;
 
@@ -45,7 +45,7 @@ public struct Shoots : ITriggerable
 
 			Terraria.Projectile.NewProjectile(
 				target.GetSource_FromThis(),
-				RelativePosition() + target.Center,
+				RelativePosition(FNA.Vector2.Zero) + target.Center,
 				Velocity(source.velocity),
 				type,
 				damage,
@@ -71,10 +71,11 @@ public struct Shoots : ITriggerable
 				type = queue.Random ? Terraria.Utils.NextFromList(Terraria.Main.rand, queue.Types) : queue.Types[i % data.Count];
 			}
 
+			var original_direction = Terraria.Utils.SafeNormalize(velocity, FNA.Vector2.Zero);
 			Terraria.Projectile.NewProjectile(
 				source,
-				position + data.RelativePosition(),
-				data.Velocity(Terraria.Utils.SafeNormalize(velocity, FNA.Vector2.Zero)),
+				position + data.RelativePosition(original_direction),
+				data.Velocity(original_direction),
 				type,
 				damage,
 				knockback,

@@ -20,7 +20,7 @@ public record struct SpecialUseStyle
 	public System.Func<Terraria.Player, float>? Rotation;
 	public System.Func<Terraria.Player, float, FNA.Vector2> Location;
 	public bool Diagonal;
-	public bool TurnOnUse;
+	public bool KeepUpdating;
 	public ArmMode CompositeArmMode;
 
 	Net net;
@@ -42,7 +42,7 @@ public record struct SpecialUseStyle
 		FNA.Vector2 relative_location;
 		ArmMode arm_mode;
 
-		if (player.ItemAnimationJustStarted && player.whoAmI == Terraria.Main.myPlayer) {
+		if ((player.ItemAnimationJustStarted || data.KeepUpdating) && player.whoAmI == Terraria.Main.myPlayer) {
 			rotation = data.Rotation?.Invoke(player) ?? 0;
 			relative_location = data.Location?.Invoke(player, rotation) ?? FNA.Vector2.Zero;
 			arm_mode = data.CompositeArmMode;
